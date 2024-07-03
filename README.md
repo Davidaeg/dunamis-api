@@ -12,4 +12,8 @@ Ensure you have the following installed on your machine:
 - Maven 3.6+
 - MySQL 8.0.33
 
+## DB CONNECTION
+
+Create a copy of the env.properties.example and rename it to: `env.properties` then, replace its content with your db name, user and password.  
+
 
