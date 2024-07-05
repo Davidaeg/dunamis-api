@@ -24,6 +24,14 @@ public class Reservacion {
     private Date fechaFin;
 
     @NotNull
+    @Column(name = "km_iniciales")
+    private int kmIniciales;
+
+    @NotNull
+    @Column(name = "km_finales")
+    private int kmFinales;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "Automovil_Placa", referencedColumnName = "Placa")
     private Automovil automovil;

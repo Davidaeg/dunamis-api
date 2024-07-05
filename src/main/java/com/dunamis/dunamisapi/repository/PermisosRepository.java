@@ -1,4 +1,7 @@
 package com.dunamis.dunamisapi.repository;
 
-public interface PermisosRepository {
+import com.dunamis.dunamisapi.model.Permisos;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PermisosRepository extends JpaRepository<Permisos, Integer> {
 }

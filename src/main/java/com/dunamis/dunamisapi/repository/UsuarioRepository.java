@@ -1,4 +1,7 @@
 package com.dunamis.dunamisapi.repository;
 
-public interface UsuarioRepository {
+import com.dunamis.dunamisapi.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 }

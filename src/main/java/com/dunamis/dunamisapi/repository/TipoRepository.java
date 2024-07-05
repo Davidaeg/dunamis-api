@@ -1,4 +1,7 @@
 package com.dunamis.dunamisapi.repository;
 
-public interface TipoRepository {
+import com.dunamis.dunamisapi.model.Tipo;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TipoRepository extends JpaRepository<Tipo, Integer> {
 }

@@ -24,6 +24,38 @@ public class Automovil {
     private int anno;
 
     @NotNull
+    @Column(name = "Color")
+    private String color;
+
+    @NotNull
+    @Column(name = "Estilo")
+    private String estilo;
+
+    @NotNull
+    @Column(name = "Carroceria")
+    private String carroceria;
+
+    @NotNull
+    @Column(name = "Combustible")
+    private String combustible;
+
+    @NotNull
+    @Column(name = "Cabina")
+    private String cabina;
+
+    @NotNull
+    @Column(name = "Traccion")
+    private String traccion;
+
+    @NotNull
+    @Column(name = "Transmision")
+    private String Transmision;
+
+    @NotNull
+    @Column(name = "Costo")
+    private double costo;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "Segmento_idSegmento", referencedColumnName = "idSegmento")
     private Segmento segmento;

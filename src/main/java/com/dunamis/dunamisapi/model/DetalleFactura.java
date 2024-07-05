@@ -24,8 +24,8 @@ public class DetalleFactura {
     private int cantidadDias;
 
     @NotNull
-    @Column(name = "Cantidad_Kilometros_Recorridos")
-    private double cantidadKilometrosRecorridos;
+    @Column(name = "Cantidad_Km_Recorridos")
+    private int cantidadKmRecorridos;
 
     @NotNull
     @ManyToOne
@@ -34,10 +34,7 @@ public class DetalleFactura {
 
     @NotNull
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "Reservacion_idReservacion", referencedColumnName = "idReservacion"),
-            @JoinColumn(name = "Reservacion_Automovil_Placa", referencedColumnName = "Automovil_Placa")
-    })
+    @JoinColumn(name = "Reservacion_idReservacion", referencedColumnName = "idReservacion")
     private Reservacion reservacion;
 
     public int getIdDetalleFactura() {
@@ -76,12 +73,12 @@ public class DetalleFactura {
     }
 
     @NotNull
-    public double getCantidadKilometrosRecorridos() {
-        return cantidadKilometrosRecorridos;
+    public double getCantidadKmRecorridos() {
+        return cantidadKmRecorridos;
     }
 
-    public void setCantidadKilometrosRecorridos(@NotNull double cantidadKilometrosRecorridos) {
-        this.cantidadKilometrosRecorridos = cantidadKilometrosRecorridos;
+    public void setCantidadKmRecorridos(@NotNull int cantidadKmRecorridos) {
+        this.cantidadKmRecorridos = cantidadKmRecorridos;
     }
 
     public @NotNull Factura getFactura() {

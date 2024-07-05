@@ -1,4 +1,7 @@
 package com.dunamis.dunamisapi.repository;
 
-public interface FacturaRepository {
+import com.dunamis.dunamisapi.model.Factura;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FacturaRepository extends JpaRepository<Factura, Integer> {
 }
