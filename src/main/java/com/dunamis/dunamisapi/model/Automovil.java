@@ -49,7 +49,7 @@ public class Automovil {
 
     @NotNull
     @Column(name = "Transmision")
-    private String Transmision;
+    private String transmision;
 
     @NotNull
     @Column(name = "Costo")
@@ -57,7 +57,7 @@ public class Automovil {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "Segmento_idSegmento", referencedColumnName = "idSegmento")
+    @JoinColumn(name = "segmento_id_segmento", referencedColumnName = "idSegmento")
     private Segmento segmento;
 
     @OneToMany(mappedBy = "automovil")
@@ -97,6 +97,71 @@ public class Automovil {
 
     public void setAnno(@NotNull int anno) {
         this.anno = anno;
+    }
+
+    public @NotNull String getColor() {
+        return color;
+    }
+
+    public void setColor(@NotNull String color) {
+        this.color = color;
+    }
+
+    public @NotNull String getEstilo() {
+        return estilo;
+    }
+
+    public void setEstilo(@NotNull String estilo) {
+        this.estilo = estilo;
+    }
+
+    public @NotNull String getCarroceria() {
+        return carroceria;
+    }
+
+    public void setCarroceria(@NotNull String carroceria) {
+        this.carroceria = carroceria;
+    }
+
+    public @NotNull String getCombustible() {
+        return combustible;
+    }
+
+    public void setCombustible(@NotNull String combustible) {
+        this.combustible = combustible;
+    }
+
+    public @NotNull String getCabina() {
+        return cabina;
+    }
+
+    public void setCabina(@NotNull String cabina) {
+        this.cabina = cabina;
+    }
+
+    public @NotNull String getTraccion() {
+        return traccion;
+    }
+
+    public void setTraccion(@NotNull String traccion) {
+        this.traccion = traccion;
+    }
+
+    public @NotNull String getTransmision() {
+        return transmision;
+    }
+
+    public void setTransmision(@NotNull String transmision) {
+        this.transmision = transmision;
+    }
+
+    @NotNull
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(@NotNull double costo) {
+        this.costo = costo;
     }
 
     public @NotNull Segmento getSegmento() {
