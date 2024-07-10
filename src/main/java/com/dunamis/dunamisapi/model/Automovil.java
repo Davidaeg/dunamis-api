@@ -57,7 +57,7 @@ public class Automovil {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "Segmento_idSegmento", referencedColumnName = "idSegmento")
+    @JoinColumn(name = "Segmento_id_Segmento", referencedColumnName = "idSegmento")
     private Segmento segmento;
 
     @OneToMany(mappedBy = "automovil")
@@ -98,12 +98,71 @@ public class Automovil {
     public void setAnno(@NotNull int anno) {
         this.anno = anno;
     }
+    public String getTraccion() {
+        return traccion;
+    }
 
-    public @NotNull Segmento getSegmento() {
+    public void setTraccion(String traccion) {
+        this.traccion = traccion;
+    }
+    public String getEstilo() {
+        return estilo;
+    }
+
+    public void setEstilo(String estilo) {
+        this.estilo = estilo;
+    }
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
+    }
+    public String getCombustible() {
+        return combustible;
+    }
+
+    public void setCombustible(String combustible) {
+        this.combustible = combustible;
+    }
+    public String getCabina() {
+        return cabina;
+    }
+
+    public void setCabina(String cabina) {
+        this.cabina = cabina;
+    }
+
+    public String getCarroceria() {
+        return carroceria;
+    }
+
+    public void setCarroceria(String carroceria) {
+        this.carroceria = carroceria;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getTransmision() {
+        return Transmision;
+    }
+
+    public void setTransmision(String transmision) {
+        this.Transmision = transmision;
+    }
+
+    public  Segmento getSegmento() {
         return segmento;
     }
 
-    public void setSegmento(@NotNull Segmento segmento) {
+    public void setSegmento( Segmento segmento) {
         this.segmento = segmento;
     }
 
