@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -17,6 +19,7 @@ public class Segmento {
     private String nombre;
 
     @OneToMany(mappedBy = "segmento")
+    @JsonManagedReference
     private Set<Automovil> automoviles;
 
     public int getIdSegmento() {

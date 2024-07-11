@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -58,6 +60,7 @@ public class Automovil {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Segmento_id_Segmento", referencedColumnName = "idSegmento")
+    @JsonBackReference
     private Segmento segmento;
 
     @OneToMany(mappedBy = "automovil")
@@ -180,5 +183,26 @@ public class Automovil {
 
     public void setTipoAutomoviles(Set<TipoAutomovil> tipoAutomoviles) {
         this.tipoAutomoviles = tipoAutomoviles;
+    }
+
+    @Override
+    public String toString() {
+        return "Automovil{" +
+                "placa='" + placa + '\'' +
+                ", marca='" + marca + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", anno=" + anno +
+                ", color='" + color + '\'' +
+                ", estilo='" + estilo + '\'' +
+                ", carroceria='" + carroceria + '\'' +
+                ", combustible='" + combustible + '\'' +
+                ", cabina='" + cabina + '\'' +
+                ", traccion='" + traccion + '\'' +
+                ", Transmision='" + Transmision + '\'' +
+                ", costo=" + costo +
+                ", segmento=" + segmento.getNombre() +
+                ", reservaciones=" + reservaciones +
+                ", tipoAutomoviles=" + tipoAutomoviles +
+                '}';
     }
 }

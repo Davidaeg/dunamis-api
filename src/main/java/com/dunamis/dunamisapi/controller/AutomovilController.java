@@ -6,6 +6,7 @@ import com.dunamis.dunamisapi.model.Segmento;
 import com.dunamis.dunamisapi.repository.AutomovilRepository;
 import com.dunamis.dunamisapi.repository.SegmentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,19 +23,18 @@ public class AutomovilController {
 
 
     @PostMapping("/automovil")
-    public Automovil nuevoAutomovil(@RequestBody Map<String, Object> automovilData) {
+    public ResponseEntity<Automovil> nuevoAutomovil(@RequestBody Map<String, Object> automovilData) {
+        try{
+
         Automovil automovil = new Automovil();
 
-        // Obtener el ID del segmento desde los datos recibidos
-        int idSegmento = (int) automovilData.get("Segmento_id_Segmento");
+        int idSegmento = (int) automovilData.get("idSegmento");
 
-        // Buscar el segmento por su ID
         Segmento segmento = segmentoRepository.findById(idSegmento).orElse(null);
 
         if (segmento != null) {
-
-            automovil.setSegmento(segmento);
             automovil.setPlaca((String) automovilData.get("placa"));
+            automovil.setSegmento(segmento);
             automovil.setMarca((String) automovilData.get("marca"));
             automovil.setModelo((String) automovilData.get("modelo"));
             automovil.setAnno((int) automovilData.get("anno"));
@@ -46,15 +46,17 @@ public class AutomovilController {
             automovil.setTraccion((String) automovilData.get("traccion"));
             automovil.setTransmision((String) automovilData.get("transmision"));
             automovil.setCosto((double) automovilData.get("costo"));
-
-
         } else {
-
+            return ResponseEntity.badRequest().build();
         }
-        return automovilRepository.save(automovil);
+            System.out.println("Saving: "+ automovil.toString());
+        Automovil savedAutomovil = automovilRepository.save(automovil);
+        return ResponseEntity.ok(savedAutomovil);
+        }catch (Error e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
-
-
 
 
     @GetMapping("/automoviles")
@@ -85,8 +87,6 @@ public class AutomovilController {
                     automovil.setModelo(newAutomovil.getModelo());
                     automovil.setTraccion(newAutomovil.getTraccion());
                     automovil.setSegmento(newAutomovil.getSegmento());
-                    //automovil.setReservaciones(newAutomovil.getReservaciones());
-                  //  automovil.setTipoAutomoviles(newAutomovil.getTipoAutomoviles());
                     return automovilRepository.save(automovil);
                 }).orElseThrow(() -> new AutomovilNotFoundException(id));
     }
