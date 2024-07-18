@@ -1,6 +1,9 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -12,24 +15,29 @@ public class Direccion {
     private int idDireccion;
 
     @NotNull
+    @NotBlank(message = "Direccion invalida")
     @Column(name = "Direccion")
     private String direccion;
 
     @NotNull
+    @NotBlank(message = "Provincia invalida")
     @Column(name = "Provincia")
     private String provincia;
 
     @NotNull
+    @NotBlank(message = "Canton invalido")
     @Column(name = "Canton")
     private String canton;
 
     @NotNull
+    @NotBlank(message = "Distrito invalido")
     @Column(name = "Distrito")
     private String distrito;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Persona_idPersona", referencedColumnName = "idPersona")
+    @JsonIgnore
     private Persona persona;
 
     public int getIdDireccion() {
