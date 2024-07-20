@@ -1,6 +1,10 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
@@ -19,11 +23,13 @@ public class Cliente {
     @NotNull
     @Column(name = "Fecha_Emision_Licencia")
     @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date fechaEmisionLicencia;
 
     @NotNull
     @Column(name = "Fecha_Vencimiento_Licencia")
     @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date fechaVencimientoLicencia;
 
     @NotNull
@@ -33,6 +39,7 @@ public class Cliente {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Persona_idPersona", referencedColumnName = "idPersona")
+    @JsonIgnore
     private Persona persona;
 
     @OneToMany(mappedBy = "cliente")
@@ -50,7 +57,7 @@ public class Cliente {
         return categoriaLicencia;
     }
 
-    public void setCategoriaLicencia(@NotNull String categoriaLicencia) {
+    public void setCategoriaLicencia(@NotNull  String categoriaLicencia) {
         this.categoriaLicencia = categoriaLicencia;
     }
 
