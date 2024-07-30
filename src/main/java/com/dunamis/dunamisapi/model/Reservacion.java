@@ -91,4 +91,20 @@ public class Reservacion {
     public void setCliente(@NotNull Cliente cliente) {
         this.cliente = cliente;
     }
+
+    public void setkmIniciales(int kmIniciales) {
+    this.kmIniciales=kmIniciales;
+    }
+
+    public void setKmFinales(int kmFinales) {
+   this.kmFinales=kmFinales;
+    }
+
+    public int getKmIniciales() {
+    return kmFinales;
+    }
+
+    public int getKmFinales() {
+    return kmFinales;
+    }
 }
