@@ -1,6 +1,7 @@
 package com.dunamis.dunamisapi.controller;
 
 import com.dunamis.dunamisapi.exception.DireccionNotFoundException;
+import com.dunamis.dunamisapi.exception.DireccionPersonNotFoundException;
 import com.dunamis.dunamisapi.model.Direccion;
 import com.dunamis.dunamisapi.model.Persona;
 import com.dunamis.dunamisapi.repository.DireccionRepository;
@@ -27,43 +28,46 @@ public class DireccionController {
     private PersonaRepository personaRepository;
 
     @PostMapping("/direccion")
-    public ResponseEntity<Direccion> newDireccion(@RequestBody @Valid Map<String, Object> direccionDatos){
-        try{
+    public ResponseEntity<Direccion> newDireccion(@RequestBody @Valid Map<String, Object> direccionDatos) {
+        try {
             Direccion direccion = new Direccion();
             String idPersona = (String) direccionDatos.get("idPersona");
             Persona persona = personaRepository.findById(idPersona).orElse(null);
 
-            if(persona != null){
-                direccion.setIdDireccion((int) direccionDatos.get("idDireccion"));
+            if (persona != null) {
                 direccion.setDireccion((String) direccionDatos.get("Direccion"));
                 direccion.setProvincia((String) direccionDatos.get("Provincia"));
                 direccion.setCanton((String) direccionDatos.get("Canton"));
                 direccion.setDistrito((String) direccionDatos.get("Distrito"));
                 direccion.setPersona(persona);
-            }else{
+            } else {
                 throw new IllegalArgumentException("La persona con el id " + idPersona + " no existe");
             }
             System.out.println("Saving: " + direccion.toString());
             Direccion saveDireccion = direccionRepository.save(direccion);
             return ResponseEntity.ok(saveDireccion);
-        }catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validacion ", e);
         }
     }
 
-    @GetMapping("/direccion")
+    @GetMapping("/direcciones")
     List<Direccion> direccionesTodas(){return direccionRepository.findAll();}
 
-    @GetMapping("/direcciones/{id}")
+    @GetMapping("/direccion/{id}")
     Direccion obtenerDireccionPorId(@PathVariable int id){
         return direccionRepository.findById(id).orElseThrow(() -> new DireccionNotFoundException(id));
     }
 
-    @PutMapping("/direcciones/{id}")
+    @GetMapping("/direccionPersona/{idPersona}")
+    public List<Direccion> obtenerDireccionesPorIdPersona(@PathVariable String idPersona){
+        return direccionRepository.findByPersona_IdPersona(idPersona);
+    }
+
+    @PutMapping("/direccion/{id}")
     Direccion actualizarDireccion(@RequestBody Direccion newDireccion, @PathVariable @Valid int id){
         return direccionRepository.findById(id)
                 .map(direccion -> {
-                    direccion.setIdDireccion((int)newDireccion.getIdDireccion());
                     direccion.setDireccion((String) newDireccion.getDireccion());
                     direccion.setProvincia((String) newDireccion.getProvincia());
                     direccion.setCanton((String) newDireccion.getCanton());
@@ -72,13 +76,42 @@ public class DireccionController {
         }).orElseThrow(() -> new DireccionNotFoundException(id));
     }
 
-    @DeleteMapping("/direcciones/{id}")
+    @PutMapping("/direccionPersona/{idPersona}")
+    public List<Direccion> actualizarDireccionPorIdPersona(@PathVariable @Valid String idPersona, @RequestBody Direccion nuevaDireccion) {
+        List<Direccion> direcciones = direccionRepository.findByPersona_IdPersona(idPersona);
+
+        if (direcciones.isEmpty()) {
+            throw new DireccionPersonNotFoundException(idPersona);
+        }
+
+        for (Direccion direccion : direcciones) {
+            direccion.setDireccion(nuevaDireccion.getDireccion());
+            direccion.setProvincia(nuevaDireccion.getProvincia());
+            direccion.setCanton(nuevaDireccion.getCanton());
+            direccion.setDistrito(nuevaDireccion.getDistrito());
+            direccionRepository.save(direccion);
+        }
+
+        return direcciones;
+    }
+
+    @DeleteMapping("/direccion/{id}")
     String eliminarDireccion(@PathVariable int id){
         if(!direccionRepository.existsById(id)){
             throw new DireccionNotFoundException(id);
         }
         direccionRepository.deleteById(id);
         return "La direccion con el id " + id + " ha sido eliminada satisfactoriamente";
+    }
+
+    @DeleteMapping("/direccionIdPersona/{idPersona}")
+    String eliminarDireccionporIdPersona(@PathVariable String idPersona) {
+        List<Direccion> direcciones = direccionRepository.findByPersona_IdPersona(idPersona);
+        if (direcciones.isEmpty()) {
+            throw new DireccionPersonNotFoundException(idPersona);
+        }
+        direccionRepository.deleteAll(direcciones);
+        return "Todas las direcciones asociadas a la persona con el id " + idPersona + " han sido eliminadas satisfactoriamente";
     }
 
 }
