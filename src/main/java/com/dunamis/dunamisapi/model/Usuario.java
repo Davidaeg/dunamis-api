@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -11,21 +13,23 @@ public class Usuario {
     @Column(name = "idUsuario")
     private int idUsuario;
 
-    @NotNull
+    @NotNull(message = "El nombre no debe ser nulo")
     @Column(name = "Nombre")
     private String nombre;
 
-    @NotNull
+    @NotNull(message = "La contraseña no debe ser nula")
     @Column(name = "Contrasenna")
     private String contrasenna;
 
-    @NotNull
+    @NotNull(message = "El rol no debe ser nulo")
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "Rol_idRol", referencedColumnName = "idRol")
     private Rol rol;
 
-    @NotNull
+    @NotNull(message = "La persona no debe ser nula")
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "Persona_idPersona", referencedColumnName = "idPersona")
     private Persona persona;
 
