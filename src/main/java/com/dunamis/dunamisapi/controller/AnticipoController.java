@@ -1,4 +1,4 @@
-package com.dunamis.dunamisapi;
+package com.dunamis.dunamisapi.controller;
 
 import com.dunamis.dunamisapi.exception.AnticipoNotFoundException;
 import com.dunamis.dunamisapi.model.Anticipo;
