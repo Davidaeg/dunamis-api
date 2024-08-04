@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -34,6 +36,7 @@ public class Reservacion {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Automovil_Placa", referencedColumnName = "Placa")
+    @JsonIgnore
     private Automovil automovil;
 
     @OneToMany(mappedBy = "reservacion")
@@ -42,6 +45,7 @@ public class Reservacion {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Cliente_idCliente", referencedColumnName = "idCliente")
+    @JsonIgnore
     private Cliente cliente;
 
     public int getIdReservacion() {
@@ -90,5 +94,21 @@ public class Reservacion {
 
     public void setCliente(@NotNull Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public int getKmIniciales() {
+        return kmIniciales;
+    }
+
+    public void setKmIniciales(int kmIniciales) {
+        this.kmIniciales = kmIniciales;
+    }
+
+    public int getKmFinales() {
+        return kmFinales;
+    }
+
+    public void setKmFinales(int kmFinales) {
+        this.kmFinales = kmFinales;
     }
 }
