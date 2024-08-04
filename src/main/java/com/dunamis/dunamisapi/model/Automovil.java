@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -58,6 +60,7 @@ public class Automovil {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Segmento_idSegmento", referencedColumnName = "idSegmento")
+    @JsonIgnore
     private Segmento segmento;
 
     @OneToMany(mappedBy = "automovil")
@@ -121,5 +124,69 @@ public class Automovil {
 
     public void setTipoAutomoviles(Set<TipoAutomovil> tipoAutomoviles) {
         this.tipoAutomoviles = tipoAutomoviles;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getEstilo() {
+        return estilo;
+    }
+
+    public void setEstilo(String estilo) {
+        this.estilo = estilo;
+    }
+
+    public String getCarroceria() {
+        return carroceria;
+    }
+
+    public void setCarroceria(String carroceria) {
+        this.carroceria = carroceria;
+    }
+
+    public String getCombustible() {
+        return combustible;
+    }
+
+    public void setCombustible(String combustible) {
+        this.combustible = combustible;
+    }
+
+    public String getCabina() {
+        return cabina;
+    }
+
+    public void setCabina(String cabina) {
+        this.cabina = cabina;
+    }
+
+    public String getTraccion() {
+        return traccion;
+    }
+
+    public void setTraccion(String traccion) {
+        this.traccion = traccion;
+    }
+
+    public String getTransmision() {
+        return Transmision;
+    }
+
+    public void setTransmision(String transmision) {
+        Transmision = transmision;
+    }
+
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
     }
 }
