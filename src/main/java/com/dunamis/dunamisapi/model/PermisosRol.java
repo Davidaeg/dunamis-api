@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -14,11 +16,13 @@ public class PermisosRol {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Permisos_PermisosID", referencedColumnName = "PermisosID")
+    @JsonIgnore
     private Permisos permisos;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Rol_idRol", referencedColumnName = "idRol")
+    @JsonIgnore
     private Rol rol;
 
     public int getId() {
