@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -14,11 +16,13 @@ public class TipoAutomovil {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Tipo_idTipo", referencedColumnName = "idTipo")
+    @JsonIgnore
     private Tipo tipo;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Automovil_Placa", referencedColumnName = "Placa")
+    @JsonIgnore
     private Automovil automovil;
 
     public int getId() {
