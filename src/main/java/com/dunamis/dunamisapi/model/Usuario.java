@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,7 +18,7 @@ public class Usuario {
     @Column(name = "idUsuario")
     private int idUsuario;
 
-    @NotNull
+    @NotNull(message = "El nombre no debe ser nulo")
     @Column(name = "Nombre")
     private String nombre;
 
@@ -31,16 +33,19 @@ public class Usuario {
             regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
             message = "Invalid password. It must contain at least 8 characters, including at least one digit, one lowercase letter, one uppercase letter, and one special character."
     )
+    @NotNull(message = "La contraseña no debe ser nula")
     @Column(name = "Contrasenna")
     private String contrasenna;
 
-    @NotNull
+    @NotNull(message = "El rol no debe ser nulo")
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "Rol_idRol", referencedColumnName = "idRol")
     private Rol rol;
 
-    @NotNull
+    @NotNull(message = "La persona no debe ser nula")
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "Persona_idPersona", referencedColumnName = "idPersona")
     private Persona persona;
 

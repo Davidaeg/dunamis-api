@@ -10,6 +10,7 @@ import java.util.Set;
 @Table(name = "Persona")
 public class Persona {
     @Id
+    @NotNull
     @Column(name = "idPersona")
     private String idPersona;
 

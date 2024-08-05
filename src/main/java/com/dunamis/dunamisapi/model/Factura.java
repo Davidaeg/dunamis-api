@@ -18,6 +18,11 @@ public class Factura {
     @Temporal(TemporalType.DATE)
     private Date fecha;
 
+    @PrePersist
+    protected void onCreate(){
+        fecha = new Date();
+    }
+
     @OneToMany(mappedBy = "factura")
     private Set<DetalleFactura> detalleFacturas;
 
