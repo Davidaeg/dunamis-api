@@ -2,10 +2,15 @@ package com.dunamis.dunamisapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Data;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Entity
+@Data
 @Table(name = "Usuario")
 public class Usuario {
     @Id
@@ -17,6 +22,17 @@ public class Usuario {
     @Column(name = "Nombre")
     private String nombre;
 
+    @NotNull
+    @Email
+    @Column(name = "email")
+    private String email;
+
+
+    @NotNull
+    @Pattern(
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = "Invalid password. It must contain at least 8 characters, including at least one digit, one lowercase letter, one uppercase letter, and one special character."
+    )
     @NotNull(message = "La contraseña no debe ser nula")
     @Column(name = "Contrasenna")
     private String contrasenna;
