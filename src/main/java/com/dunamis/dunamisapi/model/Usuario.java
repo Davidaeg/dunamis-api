@@ -3,6 +3,7 @@ package com.dunamis.dunamisapi.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -18,6 +19,12 @@ public class Usuario {
     @NotNull
     @Column(name = "Nombre")
     private String nombre;
+
+    @NotNull
+    @Email
+    @Column(name = "email")
+    private String email;
+
 
     @NotNull
     @Pattern(
