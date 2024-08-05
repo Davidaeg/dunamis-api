@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -30,11 +32,13 @@ public class DetalleFactura {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Factura_idFactura", referencedColumnName = "idFactura")
+    @JsonIgnore
     private Factura factura;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "Reservacion_idReservacion", referencedColumnName = "idReservacion")
+    @JsonIgnore
     private Reservacion reservacion;
 
     public int getIdDetalleFactura() {
