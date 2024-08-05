@@ -13,9 +13,9 @@ public class Usuario {
     @Column(name = "idUsuario")
     private int idUsuario;
 
-    @NotNull(message = "El nombre no debe ser nulo")
-    @Column(name = "Nombre")
-    private String nombre;
+    @NotNull(message = "El nombre de usuario no debe ser nulo")
+    @Column(name = "nombreUsuario")
+    private String nombreUsuario; // Cambiando el nombre del campo a nombreUsuario
 
     @NotNull(message = "La contraseña no debe ser nula")
     @Column(name = "Contrasenna")
@@ -41,12 +41,12 @@ public class Usuario {
         this.idUsuario = idUsuario;
     }
 
-    public @NotNull String getNombre() {
-        return nombre;
+    public @NotNull String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setNombre(@NotNull String nombre) {
-        this.nombre = nombre;
+    public void setNombreUsuario(@NotNull String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
     public @NotNull String getContrasenna() {
@@ -73,3 +73,4 @@ public class Usuario {
         this.persona = persona;
     }
 }
+

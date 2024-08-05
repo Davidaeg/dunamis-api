@@ -1,7 +1,9 @@
 package com.dunamis.dunamisapi.controller;
 
 import com.dunamis.dunamisapi.exception.ClienteNotFoundException;
+import com.dunamis.dunamisapi.exception.DireccionPersonNotFoundException;
 import com.dunamis.dunamisapi.model.Cliente;
+import com.dunamis.dunamisapi.model.Direccion;
 import com.dunamis.dunamisapi.model.Persona;
 import com.dunamis.dunamisapi.repository.ClienteRepository;
 import com.dunamis.dunamisapi.repository.PersonaRepository;
@@ -14,9 +16,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
+import java.time.ZoneId;
+
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:5173/", "http://localhost:3000/", "http://localhost:5174/"})
@@ -33,37 +36,39 @@ public class ClienteController {
         this.clienteRepository = clienteRepository;
     }
 
+
     @PostMapping("/cliente")
-    public ResponseEntity<Cliente> newCliente(@RequestBody @Valid Map<String, Object> clientesDatos){
-        try{
+    public ResponseEntity<Cliente> newCliente(@RequestBody @Valid Map<String, Object> clienteDatos) {
+        try {
             Cliente cliente = new Cliente();
-            String idPersona = (String) clientesDatos.get("idPersona");
-            Persona persona = personaRepository.getById(idPersona);
 
-            String fechaEmisionString = (String) clientesDatos.get("fecha_emision_licencia");
-            String fechaVencimientoString = (String) clientesDatos.get("fecha_vencimiento_licencia");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            // Obtén los datos del cliente desde el mapa
+            String idPersona = (String) clienteDatos.get("idPersona");
+            Persona persona = personaRepository.findById(idPersona).orElse(null);
 
-            Date fechaEmisionDate = sdf.parse(fechaEmisionString);
-            Date fechaVencimientoDate = sdf.parse(fechaVencimientoString);
+            if (persona != null) {
+                cliente.setIdCliente((String) clienteDatos.get("idCliente"));
+                cliente.setCategoriaLicencia((String) clienteDatos.get("categoriaLicencia"));
 
-            if(persona != null){
-                cliente.setIdCliente((String) clientesDatos.get("idCliente"));
-                cliente.setCategoriaLicencia((String) clientesDatos.get("categoria_licencia"));
+                LocalDate fechaEmisionLocalDate = LocalDate.parse((String) clienteDatos.get("fechaEmisionLicencia"));
+                Date fechaEmisionDate = Date.from(fechaEmisionLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
                 cliente.setFechaEmisionLicencia(fechaEmisionDate);
+
+                LocalDate fechaVencimientoLocalDate = LocalDate.parse((String) clienteDatos.get("fechaVencimientoLicencia"));
+                Date fechaVencimientoDate = Date.from(fechaVencimientoLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
                 cliente.setFechaVencimientoLicencia(fechaVencimientoDate);
-                cliente.setEstado((String) clientesDatos.get("estado"));
+
+                cliente.setEstado((String) clienteDatos.get("estado"));
                 cliente.setPersona(persona);
-            }else{
+            } else {
                 throw new IllegalArgumentException("La persona con el id " + idPersona + " no existe");
             }
+
             System.out.println("Saving: " + cliente.toString());
-            Cliente savedCliente = clienteRepository.save(cliente);
-            return ResponseEntity.ok(savedCliente);
-        }catch(ConstraintViolationException e) {
+            Cliente saveCliente = clienteRepository.save(cliente);
+            return ResponseEntity.ok(saveCliente);
+        } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validacion ", e);
-        }catch (ParseException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -90,6 +95,26 @@ public class ClienteController {
         }
     }
 
+    @PutMapping("/ClientePorPersona/{idPersona}")
+    public List<Cliente> actualizarClientePorIdPersona(@PathVariable @Valid String idPersona, @RequestBody Cliente nuevoCliente) {
+        List<Cliente> clientes = clienteRepository.findByPersona_IdPersona(idPersona);
+
+        if (clientes.isEmpty()) {
+            throw new DireccionPersonNotFoundException(idPersona);
+        }
+
+        for (Cliente cliente : clientes) {
+            cliente.setIdCliente(nuevoCliente.getIdCliente());
+            cliente.setCategoriaLicencia(nuevoCliente.getCategoriaLicencia());
+            cliente.setFechaEmisionLicencia(nuevoCliente.getFechaEmisionLicencia());
+            cliente.setFechaVencimientoLicencia(nuevoCliente.getFechaVencimientoLicencia());
+            cliente.setEstado(nuevoCliente.getEstado());
+            clienteRepository.save(cliente);
+        }
+
+        return clientes;
+    }
+
 
     @GetMapping("/cliente")
     List<Cliente> direccionesTodas(){return clienteRepository.findAll();}
@@ -97,6 +122,11 @@ public class ClienteController {
     @GetMapping("/cliente/{id}")
     Cliente obtenerClientePorId(@PathVariable String id){
         return clienteRepository.findById(id).orElseThrow(() -> new ClienteNotFoundException(id));
+    }
+
+    @GetMapping("/clientePersona/{idPersona}")
+    public List<Cliente> obtenerClientesPorIdPersona(@PathVariable String idPersona){
+        return clienteRepository.findByPersona_IdPersona(idPersona);
     }
 
     @DeleteMapping("/cliente/{id}")
