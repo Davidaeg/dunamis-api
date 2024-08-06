@@ -47,14 +47,14 @@ public class ClienteController {
             Persona persona = personaRepository.findById(idPersona).orElse(null);
 
             if (persona != null) {
-                cliente.setIdCliente((String) clienteDatos.get("id_cliente"));
-                cliente.setCategoriaLicencia((String) clienteDatos.get("categoria_licencia"));
+                cliente.setIdCliente((String) clienteDatos.get("idCliente"));
+                cliente.setCategoriaLicencia((String) clienteDatos.get("categoriaLicencia"));
 
-                LocalDate fechaEmisionLocalDate = LocalDate.parse((String) clienteDatos.get("fecha_emision_licencia"));
+                LocalDate fechaEmisionLocalDate = LocalDate.parse((String) clienteDatos.get("fechaEmisionLicencia"));
                 Date fechaEmisionDate = Date.from(fechaEmisionLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
                 cliente.setFechaEmisionLicencia(fechaEmisionDate);
 
-                LocalDate fechaVencimientoLocalDate = LocalDate.parse((String) clienteDatos.get("fecha_vencimiento_licencia"));
+                LocalDate fechaVencimientoLocalDate = LocalDate.parse((String) clienteDatos.get("fechaVencimientoLicencia"));
                 Date fechaVencimientoDate = Date.from(fechaVencimientoLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
                 cliente.setFechaVencimientoLicencia(fechaVencimientoDate);
 
