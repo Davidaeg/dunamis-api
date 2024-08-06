@@ -1,5 +1,6 @@
 package com.dunamis.dunamisapi.controller;
 
+import com.dunamis.dunamisapi.dto.UsuarioDTO;
 import com.dunamis.dunamisapi.exception.DireccionNotFoundException;
 import com.dunamis.dunamisapi.exception.DireccionPersonNotFoundException;
 import com.dunamis.dunamisapi.exception.UserNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,6 +86,24 @@ public class UserController {
     public List<Usuario> obtenerUsuariosPorIdPersona(@PathVariable String idPersona) {
         return userRepository.findByPersona_IdPersona(idPersona);
     }
+
+    @GetMapping("/usuarioPorPersonaDTO/{idPersona}")
+    public List<UsuarioDTO> obtenerUsuariosPorIdPersonaDTO(@PathVariable String idPersona) {
+        List<Usuario> usuarios = userRepository.findByPersona_IdPersona(idPersona);
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+
+        for (Usuario usuario : usuarios) {
+            UsuarioDTO dto = new UsuarioDTO();
+            dto.setIdUsuario(usuario.getIdUsuario());
+            dto.setNombreUsuario(usuario.getNombreUsuario());
+            dto.setContrasenna(usuario.getContrasenna());
+            dto.setRolNombre(usuario.getRol().getNombre());
+            usuarioDTOs.add(dto);
+        }
+
+        return usuarioDTOs;
+    }
+
 
     @PutMapping("/user/{id}")
     Usuario updateUser(@RequestBody Usuario newUser, @PathVariable int id) {
