@@ -36,6 +36,7 @@ public class AutomovilController {
                 auto.setPlaca((String) automovilDatos.get("placa"));
                 auto.setTransmision((String) automovilDatos.get("transmision"));
                 auto.setAnno((int) automovilDatos.get("anno"));
+                auto.setAutomovilActivo((boolean) automovilDatos.get("automovil_activo"));
                 auto.setCabina((String) automovilDatos.get("cabina"));
                 auto.setCarroceria((String) automovilDatos.get("carroceria"));
                 auto.setColor((String) automovilDatos.get("color"));
@@ -68,6 +69,7 @@ public class AutomovilController {
     @PutMapping("/automovil/{id}")
     Automovil actualizarAutomovil(@RequestBody Automovil automovil, @PathVariable String id){
         return automovilRepository.findById(id).map(auto ->{
+            auto.setAutomovilActivo((boolean) automovil.isAutomovilActivo());
             auto.setColor((String) automovil.getColor());
             auto.setCosto((Double) automovil.getCosto());
             return automovilRepository.save(auto);
