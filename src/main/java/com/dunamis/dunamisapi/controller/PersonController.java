@@ -1,9 +1,13 @@
 package com.dunamis.dunamisapi.controller;
 
 import com.dunamis.dunamisapi.exception.PersonNotFoundException;
+import com.dunamis.dunamisapi.model.Cliente;
 import com.dunamis.dunamisapi.model.Direccion;
 import com.dunamis.dunamisapi.model.Persona;
+import com.dunamis.dunamisapi.model.Usuario;
+import com.dunamis.dunamisapi.repository.ClienteRepository;
 import com.dunamis.dunamisapi.repository.PersonaRepository;
+import com.dunamis.dunamisapi.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.dunamis.dunamisapi.repository.DireccionRepository;
@@ -21,6 +25,12 @@ public class PersonController {
 
     @Autowired
     private DireccionRepository direccionRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
      @PostMapping("/persona")
      Persona newPersona(@RequestBody Persona newPersona) {
@@ -79,6 +89,12 @@ public class PersonController {
         }
         List<Direccion> direcciones = direccionRepository.findByPersona_IdPersona(id);
         direccionRepository.deleteAll(direcciones);
+
+        List<Cliente> clientes = clienteRepository.findByPersona_IdPersona(id);
+        clienteRepository.deleteAll(clientes);
+
+        List<Usuario> usuarios = usuarioRepository.findByPersona_IdPersona(id);
+        usuarioRepository.deleteAll(usuarios);
 
         personaRepository.deleteById(id);
         return "La persona con el id " + id + " ha sido eliminada satisfactoriamente";
