@@ -58,6 +58,9 @@ public class Automovil {
     private double costo;
 
     @NotNull
+    private boolean automovilActivo;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "Segmento_idSegmento", referencedColumnName = "idSegmento")
     @JsonIgnore
@@ -188,5 +191,13 @@ public class Automovil {
 
     public void setCosto(double costo) {
         this.costo = costo;
+    }
+
+    public boolean isAutomovilActivo() {
+        return automovilActivo;
+    }
+
+    public void setAutomovilActivo(boolean automovilActivo) {
+        this.automovilActivo = automovilActivo;
     }
 }

@@ -34,6 +34,9 @@ public class Reservacion {
     private int kmFinales;
 
     @NotNull
+    private boolean reservacionActivo;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "Automovil_Placa", referencedColumnName = "Placa")
     @JsonIgnore
@@ -110,5 +113,13 @@ public class Reservacion {
 
     public void setKmFinales(int kmFinales) {
         this.kmFinales = kmFinales;
+    }
+
+    public boolean isReservacionActivo() {
+        return reservacionActivo;
+    }
+
+    public void setReservacionActivo(boolean reservacionActivo) {
+        this.reservacionActivo = reservacionActivo;
     }
 }

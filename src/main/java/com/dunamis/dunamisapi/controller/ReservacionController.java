@@ -55,6 +55,7 @@ public class ReservacionController {
                 reservacion.setFechaInicio(fechaInicioDate);
                 reservacion.setKmFinales((int) reservacionDatos.get("km_finales"));
                 reservacion.setKmIniciales((int) reservacionDatos.get("km_iniciales"));
+                reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacion_activo"));
                 reservacion.setAutomovil(automovil);
                 reservacion.setCliente(cliente);
             }else{
@@ -85,6 +86,7 @@ public class ReservacionController {
             reserva.setFechaFin(newReservacion.getFechaFin());
             reserva.setKmFinales(newReservacion.getKmFinales());
             reserva.setKmIniciales(newReservacion.getKmIniciales());
+            reserva.setReservacionActivo(newReservacion.isReservacionActivo());
             return reservacionRepository.save(reserva);
         }).orElseThrow(()-> new ReservacionNotFoundException(id));
     }
