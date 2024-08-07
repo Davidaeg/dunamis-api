@@ -29,14 +29,14 @@ public class AutomovilController {
     public ResponseEntity<Automovil> newAutomovil(@RequestBody Map<String, Object> automovilDatos){
         try{
             Automovil auto = new Automovil();
-            int idSegemento = (int) automovilDatos.get("segmento_id_segmento");
+            int idSegemento = (int) automovilDatos.get("idSegmento");
             Segmento segmento = segmentoRepository.getById(idSegemento);
 
             if(segmento != null){
                 auto.setPlaca((String) automovilDatos.get("placa"));
                 auto.setTransmision((String) automovilDatos.get("transmision"));
                 auto.setAnno((int) automovilDatos.get("anno"));
-                auto.setAutomovilActivo((boolean) automovilDatos.get("automovil_activo"));
+                auto.setAutomovilActivo((boolean) automovilDatos.get("automovilActivo"));
                 auto.setCabina((String) automovilDatos.get("cabina"));
                 auto.setCarroceria((String) automovilDatos.get("carroceria"));
                 auto.setColor((String) automovilDatos.get("color"));
