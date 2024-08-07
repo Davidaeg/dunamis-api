@@ -58,7 +58,7 @@ public class AutomovilController {
         }
     }
 
-    @GetMapping("/automovil")
+    @GetMapping("/automoviles")
     List<Automovil> automovilesTodos(){return automovilRepository.findAll();}
 
     @GetMapping("/automovil/{id}")

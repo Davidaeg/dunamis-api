@@ -19,7 +19,7 @@ public class SegmentoController {
     @PostMapping("/segmento")
     Segmento newSegmento(@RequestBody Segmento newSegmento){return segmentoRepository.save(newSegmento);}
 
-    @GetMapping("/segmento")
+    @GetMapping("/segmentos")
     List<Segmento> segmentoTodos(){return segmentoRepository.findAll();}
 
     @GetMapping("/segmento/{id}")
