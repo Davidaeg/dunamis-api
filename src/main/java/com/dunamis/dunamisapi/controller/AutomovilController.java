@@ -7,6 +7,7 @@ import com.dunamis.dunamisapi.model.Segmento;
 import com.dunamis.dunamisapi.repository.AutomovilRepository;
 import com.dunamis.dunamisapi.repository.SegmentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -110,7 +111,16 @@ public class AutomovilController {
         if(!automovilRepository.existsById(id)){
             throw new AutomovilNotFoundException(id);
         }
-        automovilRepository.deleteById(id);
-        return "El automovil con el id " + id + " ha sido eliminado satisfactoriamente";
+
+        try {
+            automovilRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "No se puede eliminar el automóvil porque tiene reservas asociadas", e);
+        }
+
+        return "El automóvil con el id " + id + " ha sido eliminado satisfactoriamente";
     }
+
+
 }
