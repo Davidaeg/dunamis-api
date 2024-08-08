@@ -1,5 +1,6 @@
 package com.dunamis.dunamisapi.controller;
 
+import com.dunamis.dunamisapi.dto.AutomovilDTO;
 import com.dunamis.dunamisapi.exception.AutomovilNotFoundException;
 import com.dunamis.dunamisapi.model.Automovil;
 import com.dunamis.dunamisapi.model.Segmento;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +66,33 @@ public class AutomovilController {
     @GetMapping("/automovil/{id}")
     Automovil obtenerAutomovilPorId(@PathVariable String id){
         return  automovilRepository.findById(id).orElseThrow(()-> new AutomovilNotFoundException(id));
+    }
+
+    @GetMapping("/automovilesDTO")
+    public List<AutomovilDTO> obtenerTodosLosAutomovilesDTO() {
+        List<Automovil> automoviles = automovilRepository.findAll();
+        List<AutomovilDTO> automovilDTOs = new ArrayList<>();
+
+        for (Automovil automovil : automoviles) {
+            AutomovilDTO dto = new AutomovilDTO();
+            dto.setPlaca(automovil.getPlaca());
+            dto.setMarca(automovil.getMarca());
+            dto.setModelo(automovil.getModelo());
+            dto.setAnno(automovil.getAnno());
+            dto.setColor(automovil.getColor());
+            dto.setEstilo(automovil.getEstilo());
+            dto.setCarroceria(automovil.getCarroceria());
+            dto.setCombustible(automovil.getCombustible());
+            dto.setCabina(automovil.getCabina());
+            dto.setTraccion(automovil.getTraccion());
+            dto.setTransmision(automovil.getTransmision());
+            dto.setCosto(automovil.getCosto());
+            dto.setAutomovilActivo(automovil.isAutomovilActivo());
+            dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+            automovilDTOs.add(dto);
+        }
+
+        return automovilDTOs;
     }
 
     @PutMapping("/automovil/{id}")
