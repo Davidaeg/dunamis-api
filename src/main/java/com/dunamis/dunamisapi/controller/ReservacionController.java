@@ -11,6 +11,7 @@ import com.dunamis.dunamisapi.repository.ClienteRepository;
 import com.dunamis.dunamisapi.repository.ReservacionRepository;
 import org.hibernate.procedure.spi.ParameterRegistrationImplementor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,36 +43,38 @@ public class ReservacionController {
     public ResponseEntity<Reservacion> nuevaReservacion(@RequestBody Map<String, Object> reservacionDatos){
         try{
             String idAutmovil = (String) reservacionDatos.get("placa");
-            String idCliente =  (String) reservacionDatos.get("idCliente");
-            Automovil automovil = automovilRepository.findById(idAutmovil).orElseThrow(null);
-            Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(null);
+            String idCliente = (String) reservacionDatos.get("idCliente");
+            Automovil automovil = automovilRepository.findById(idAutmovil).orElseThrow(() -> new IllegalArgumentException("El automovil con la placa numero " + idAutmovil + " no existe"));
+            Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new IllegalArgumentException("El cliente con el id " + idCliente + " no existe"));
             String fechaFinString = (String) reservacionDatos.get("fechaFin");
             String fechaInicioString = (String) reservacionDatos.get("fechaInicio");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date fechafinDate = sdf.parse(fechaFinString);
             Date fechaInicioDate = sdf.parse(fechaInicioString);
-            Reservacion reservacion = new Reservacion();
 
-            if(automovil != null && cliente != null){
-                reservacion.setFechaFin(fechafinDate);
-                reservacion.setFechaInicio(fechaInicioDate);
-                reservacion.setKmFinales((int) reservacionDatos.get("kmFinales"));
-                reservacion.setKmIniciales((int) reservacionDatos.get("kmIniciales"));
-                reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacionActivo"));
-                reservacion.setAutomovil(automovil);
-                reservacion.setCliente(cliente);
-            }else{
-                throw new IllegalArgumentException("El automovil con la placa numero " + idAutmovil + " o el cliente con el id " + idCliente + " no existe");
-            }
+
+            automovil.setAutomovilActivo(false);
+            automovilRepository.save(automovil); // Guardar el automóvil actualizado
+
+            Reservacion reservacion = new Reservacion();
+            reservacion.setFechaFin(fechafinDate);
+            reservacion.setFechaInicio(fechaInicioDate);
+            reservacion.setKmFinales((int) reservacionDatos.get("kmFinales"));
+            reservacion.setKmIniciales((int) reservacionDatos.get("kmIniciales"));
+            reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacionActivo"));
+            reservacion.setAutomovil(automovil);
+            reservacion.setCliente(cliente);
+
             System.out.println("Saving: " + reservacion.toString());
             Reservacion savedReservacion = reservacionRepository.save(reservacion);
             return ResponseEntity.ok(savedReservacion);
         } catch (ParseException e) {
             throw new RuntimeException(e);
-        }catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validacion ", e);
         }
     }
+
 
     @GetMapping("/reservaciones")
     List<Reservacion> reservacionesTodas(){return reservacionRepository.findAll();}
@@ -119,7 +122,14 @@ public class ReservacionController {
         if(!reservacionRepository.existsById(id)){
             throw new ReservacionNotFoundException(id);
         }
-        reservacionRepository.deleteById(id);
+
+        try {
+            reservacionRepository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "No se puede eliminar la reserva", e);
+        }
+
         return "La reserva con el id " + id + " ha sido eliminada satisfactoriamente";
     }
 }

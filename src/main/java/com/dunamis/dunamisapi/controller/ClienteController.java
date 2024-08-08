@@ -96,7 +96,7 @@ public class ClienteController {
     }
 
     @PutMapping("/ClientePorPersona/{idPersona}")
-    public List<Cliente> actualizarClientePorIdPersona(@PathVariable @Valid String idPersona, @RequestBody Cliente nuevoCliente) {
+    public List<Cliente> actualizarClientePorIdPersona(@PathVariable @Valid String idPersona, @RequestBody Map<String, Object> clienteDatos) {
         List<Cliente> clientes = clienteRepository.findByPersona_IdPersona(idPersona);
 
         if (clientes.isEmpty()) {
@@ -104,11 +104,38 @@ public class ClienteController {
         }
 
         for (Cliente cliente : clientes) {
-            cliente.setIdCliente(nuevoCliente.getIdCliente());
-            cliente.setCategoriaLicencia(nuevoCliente.getCategoriaLicencia());
-            cliente.setFechaEmisionLicencia(nuevoCliente.getFechaEmisionLicencia());
-            cliente.setFechaVencimientoLicencia(nuevoCliente.getFechaVencimientoLicencia());
-            cliente.setEstado(nuevoCliente.getEstado());
+            // Actualiza los datos del cliente usando el mapa
+
+            String idCliente = (String) clienteDatos.get("idCliente");
+            if (idCliente != null && !idCliente.isEmpty()) {
+                cliente.setIdCliente(idCliente);
+            }
+
+            String categoriaLicencia = (String) clienteDatos.get("categoriaLicencia");
+            if (categoriaLicencia != null && !categoriaLicencia.isEmpty()) {
+                cliente.setCategoriaLicencia(categoriaLicencia);
+            }
+
+            String fechaEmisionLicencia = (String) clienteDatos.get("fechaEmisionLicencia");
+            if (fechaEmisionLicencia != null && !fechaEmisionLicencia.isEmpty()) {
+                LocalDate fechaEmisionLicenciaLocalDate = LocalDate.parse(fechaEmisionLicencia);
+                Date fechaEmisionLicenciaDate = Date.from(fechaEmisionLicenciaLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                cliente.setFechaEmisionLicencia(fechaEmisionLicenciaDate);
+            }
+
+            String fechaVencimientoLicencia = (String) clienteDatos.get("fechaVencimientoLicencia");
+            if (fechaVencimientoLicencia != null && !fechaVencimientoLicencia.isEmpty()) {
+                LocalDate fechaVencimientoLicenciaLocalDate = LocalDate.parse(fechaVencimientoLicencia);
+                Date fechaVencimientoLicenciaDate = Date.from(fechaVencimientoLicenciaLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                cliente.setFechaVencimientoLicencia(fechaVencimientoLicenciaDate);
+            }
+
+            String estado = (String) clienteDatos.get("estado");
+            if (estado != null && !estado.isEmpty()) {
+                cliente.setEstado(estado);
+            }
+
+            // Guarda el cliente actualizado
             clienteRepository.save(cliente);
         }
 
@@ -116,7 +143,12 @@ public class ClienteController {
     }
 
 
-    @GetMapping("/cliente")
+    @GetMapping("/clientesSinReserva")
+    List<Cliente> clientesSinReservaciones() {
+        return clienteRepository.findByReservacionesIsEmpty();
+    }
+
+    @GetMapping("/clientes")
     List<Cliente> direccionesTodas(){return clienteRepository.findAll();}
 
     @GetMapping("/cliente/{id}")
