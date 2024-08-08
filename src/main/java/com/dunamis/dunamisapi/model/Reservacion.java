@@ -34,11 +34,12 @@ public class Reservacion {
     private int kmFinales;
 
     @NotNull
+    @Column(name = "reservacion_activo")
     private boolean reservacionActivo;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "Automovil_Placa", referencedColumnName = "Placa")
+    @JoinColumn(name = "Automovil_Placa", referencedColumnName = "placa")
     @JsonIgnore
     private Automovil automovil;
 

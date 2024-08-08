@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.controller;
 
+import com.dunamis.dunamisapi.dto.AutomovilDTO;
+import com.dunamis.dunamisapi.dto.ReservacionDTO;
 import com.dunamis.dunamisapi.exception.ReservacionNotFoundException;
 import com.dunamis.dunamisapi.model.Automovil;
 import com.dunamis.dunamisapi.model.Cliente;
@@ -17,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.ConstraintViolationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,24 +41,23 @@ public class ReservacionController {
     @PostMapping("/reservacion")
     public ResponseEntity<Reservacion> nuevaReservacion(@RequestBody Map<String, Object> reservacionDatos){
         try{
-            String idAutmovil = (String) reservacionDatos.get("automovil_placa");
-            String idCliente =  (String) reservacionDatos.get("cliente_id_cliente");
+            String idAutmovil = (String) reservacionDatos.get("placa");
+            String idCliente =  (String) reservacionDatos.get("idCliente");
             Automovil automovil = automovilRepository.findById(idAutmovil).orElseThrow(null);
             Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(null);
-            String fechaFinString = (String) reservacionDatos.get("fecha_fin");
-            String fechaInicioString = (String) reservacionDatos.get("fecha_inicio");
+            String fechaFinString = (String) reservacionDatos.get("fechaFin");
+            String fechaInicioString = (String) reservacionDatos.get("fechaInicio");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date fechafinDate = sdf.parse(fechaFinString);
             Date fechaInicioDate = sdf.parse(fechaInicioString);
             Reservacion reservacion = new Reservacion();
 
             if(automovil != null && cliente != null){
-                reservacion.setIdReservacion((int) reservacionDatos.get("id_reservacion"));
                 reservacion.setFechaFin(fechafinDate);
                 reservacion.setFechaInicio(fechaInicioDate);
-                reservacion.setKmFinales((int) reservacionDatos.get("km_finales"));
-                reservacion.setKmIniciales((int) reservacionDatos.get("km_iniciales"));
-                reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacion_activo"));
+                reservacion.setKmFinales((int) reservacionDatos.get("kmFinales"));
+                reservacion.setKmIniciales((int) reservacionDatos.get("kmIniciales"));
+                reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacionActivo"));
                 reservacion.setAutomovil(automovil);
                 reservacion.setCliente(cliente);
             }else{
@@ -71,12 +73,33 @@ public class ReservacionController {
         }
     }
 
-    @GetMapping("/reservacion")
+    @GetMapping("/reservaciones")
     List<Reservacion> reservacionesTodas(){return reservacionRepository.findAll();}
 
     @GetMapping("/reservacion/{id}")
     Reservacion obtenerReservacionPorId(@PathVariable int id){
         return reservacionRepository.findById(id).orElseThrow(()-> new ReservacionNotFoundException(id));
+    }
+
+    @GetMapping("/reservacionesDTO")
+    public List<ReservacionDTO> obtenerTodosLasReservacionesDTO() {
+        List<Reservacion> reservaciones = reservacionRepository.findAll();
+        List<ReservacionDTO> reservasDTOs = new ArrayList<>();
+
+        for (Reservacion reservacion : reservaciones) {
+            ReservacionDTO dto = new ReservacionDTO();
+            dto.setIdReservacion(reservacion.getIdReservacion());
+            dto.setFechaFin(reservacion.getFechaFin());
+            dto.setFechaInicio(reservacion.getFechaInicio());
+            dto.setKmFinales(reservacion.getKmFinales());
+            dto.setKmIniciales(reservacion.getKmIniciales());
+            dto.setReservacionActivo(reservacion.isReservacionActivo());
+            dto.setAutoPlaca(reservacion.getAutomovil().getPlaca());
+            dto.setIdCliente(reservacion.getCliente().getIdCliente());
+            reservasDTOs.add(dto);
+        }
+
+        return reservasDTOs;
     }
 
     @PutMapping("/reservacion/{id}")
