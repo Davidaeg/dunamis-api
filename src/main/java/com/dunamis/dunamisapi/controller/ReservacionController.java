@@ -54,7 +54,7 @@ public class ReservacionController {
 
 
             automovil.setAutomovilActivo(false);
-            automovilRepository.save(automovil); // Guardar el automóvil actualizado
+            automovilRepository.save(automovil);
 
             Reservacion reservacion = new Reservacion();
             reservacion.setFechaFin(fechafinDate);
