@@ -2,7 +2,7 @@ package com.dunamis.dunamisapi.dto;
 
 public class UsuarioDTO {
     private int idUsuario;
-    private String nombreUsuario;
+    private String emailUsuario;
     private String contrasenna;
     private String idRol;
 
@@ -15,12 +15,12 @@ public class UsuarioDTO {
         this.idUsuario = idUsuario;
     }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
+    public String getEmailUsuario() {
+        return emailUsuario;
     }
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
+    public void setEmailUsuario(String emailUsuario) {
+        this.emailUsuario = emailUsuario;
     }
 
     public String getContrasenna() {
@@ -31,7 +31,7 @@ public class UsuarioDTO {
         this.contrasenna = contrasenna;
     }
 
-    public String getidRol() {
+    public String getIdRol() {
         return idRol;
     }
 
@@ -39,4 +39,5 @@ public class UsuarioDTO {
         this.idRol = idRol;
     }
 }
+
 
