@@ -108,10 +108,8 @@ public class ReservacionController {
     @PutMapping("/reservacion/{id}")
     Reservacion actualizarReservacion(@RequestBody Reservacion newReservacion, @PathVariable int id){
         return  reservacionRepository.findById(id).map(reserva ->{
-            reserva.setFechaInicio(newReservacion.getFechaInicio());
             reserva.setFechaFin(newReservacion.getFechaFin());
             reserva.setKmFinales(newReservacion.getKmFinales());
-            reserva.setKmIniciales(newReservacion.getKmIniciales());
             reserva.setReservacionActivo(newReservacion.isReservacionActivo());
             return reservacionRepository.save(reserva);
         }).orElseThrow(()-> new ReservacionNotFoundException(id));
