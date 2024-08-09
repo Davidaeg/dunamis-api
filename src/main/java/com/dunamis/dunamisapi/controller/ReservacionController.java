@@ -119,16 +119,14 @@ public class ReservacionController {
 
     @DeleteMapping("/reservacion/{id}")
     String deleteReservacion(@PathVariable int id){
-        if(!reservacionRepository.existsById(id)){
-            throw new ReservacionNotFoundException(id);
-        }
+        Reservacion reservacion = reservacionRepository.findById(id)
+                .orElseThrow(() -> new ReservacionNotFoundException(id));
 
-        try {
-            reservacionRepository.deleteById(id);
-        }catch (DataIntegrityViolationException e){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "No se puede eliminar la reserva", e);
-        }
+        reservacionRepository.deleteById(id);
+
+        Automovil automovil = reservacion.getAutomovil();
+        automovil.setAutomovilActivo(true);
+        automovilRepository.save(automovil);
 
         return "La reserva con el id " + id + " ha sido eliminada satisfactoriamente";
     }
