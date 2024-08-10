@@ -101,6 +101,30 @@ public class AutomovilController {
         return  automovilRepository.findById(id).orElseThrow(()-> new AutomovilNotFoundException(id));
     }
 
+    @GetMapping("/automovilDTO/{id}")
+    public AutomovilDTO obtenerAutomovilDTOPorId(@PathVariable String id) {
+        Automovil automovil = automovilRepository.findById(id)
+                .orElseThrow(() -> new AutomovilNotFoundException(id));
+
+        AutomovilDTO dto = new AutomovilDTO();
+        dto.setPlaca(automovil.getPlaca());
+        dto.setMarca(automovil.getMarca());
+        dto.setModelo(automovil.getModelo());
+        dto.setAnno(automovil.getAnno());
+        dto.setColor(automovil.getColor());
+        dto.setEstilo(automovil.getEstilo());
+        dto.setCarroceria(automovil.getCarroceria());
+        dto.setCombustible(automovil.getCombustible());
+        dto.setCabina(automovil.getCabina());
+        dto.setTraccion(automovil.getTraccion());
+        dto.setTransmision(automovil.getTransmision());
+        dto.setCosto(automovil.getCosto());
+        dto.setAutomovilActivo(automovil.isAutomovilActivo());
+        dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+
+        return dto;
+    }
+
     @GetMapping("/automovilesDTO")
     public List<AutomovilDTO> obtenerTodosLosAutomovilesDTO() {
         List<Automovil> automoviles = automovilRepository.findAll();

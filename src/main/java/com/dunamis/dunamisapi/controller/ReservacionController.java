@@ -106,14 +106,30 @@ public class ReservacionController {
     }
 
     @PutMapping("/reservacion/{id}")
-    Reservacion actualizarReservacion(@RequestBody Reservacion newReservacion, @PathVariable int id){
-        return  reservacionRepository.findById(id).map(reserva ->{
-            reserva.setFechaFin(newReservacion.getFechaFin());
-            reserva.setKmFinales(newReservacion.getKmFinales());
-            reserva.setReservacionActivo(newReservacion.isReservacionActivo());
-            return reservacionRepository.save(reserva);
-        }).orElseThrow(()-> new ReservacionNotFoundException(id));
+    public ResponseEntity<Reservacion> actualizarReservacion(@PathVariable int id, @RequestBody Map<String, Object> reservacionDatos) {
+        try {
+            // Buscar la reservación existente
+            Reservacion reservacionExistente = reservacionRepository.findById(id)
+                    .orElseThrow(() -> new ReservacionNotFoundException(id));
+
+            String fechaFinString = (String) reservacionDatos.get("fechaFin");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date fechaFinDate = sdf.parse(fechaFinString);
+
+            reservacionExistente.setFechaFin(fechaFinDate);
+            reservacionExistente.setKmFinales((int) reservacionDatos.get("kmFinales"));
+            reservacionExistente.setReservacionActivo((boolean) reservacionDatos.get("reservacionActivo"));
+
+            Reservacion reservacionActualizada = reservacionRepository.save(reservacionExistente);
+            return ResponseEntity.ok(reservacionActualizada);
+
+        } catch (ParseException e) {
+            throw new RuntimeException("Error al parsear la fecha", e);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validación", e);
+        }
     }
+
 
     @DeleteMapping("/reservacion/{id}")
     String deleteReservacion(@PathVariable int id){
