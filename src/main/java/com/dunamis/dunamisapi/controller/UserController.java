@@ -53,7 +53,7 @@ public class UserController {
             System.out.println("Rol: " + rol);
 
             if (persona != null && rol != null) {
-                usuario.setNombreUsuario((String) userDatos.get("nombreUsuario"));
+                usuario.setEmailUsuario((String) userDatos.get("emailUsuario"));
                 usuario.setContrasenna((String) userDatos.get("contrasenna"));
                 usuario.setPersona(persona);
                 usuario.setRol(rol);
@@ -95,7 +95,7 @@ public class UserController {
         for (Usuario usuario : usuarios) {
             UsuarioDTO dto = new UsuarioDTO();
             dto.setIdUsuario(usuario.getIdUsuario());
-            dto.setNombreUsuario(usuario.getNombreUsuario());
+            dto.setEmailUsuario(usuario.getEmailUsuario());
             dto.setContrasenna(usuario.getContrasenna());
             dto.setRolNombre(usuario.getRol().getNombre());
             usuarioDTOs.add(dto);
@@ -109,7 +109,7 @@ public class UserController {
     Usuario updateUser(@RequestBody Usuario newUser, @PathVariable int id) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setNombreUsuario(newUser.getNombreUsuario());
+                    user.setEmailUsuario(newUser.getEmailUsuario());
                     user.setContrasenna(newUser.getContrasenna());
                     return userRepository.save(user);
                 }).orElseThrow(() -> new UserNotFoundException(id));
@@ -123,7 +123,7 @@ public class UserController {
             throw new DireccionPersonNotFoundException(idPersona);
         }
 
-        String nombreUsuario = (String) userDatos.get("nombreUsuario");
+        String emailUsuario = (String) userDatos.get("emailUsuario");
         String contrasenna = (String) userDatos.get("contrasenna");
         String nombreRol = (String) userDatos.get("idRol");
 
@@ -131,7 +131,7 @@ public class UserController {
         Rol rol = optionalRol.orElseThrow(() -> new IllegalArgumentException("El rol no existe"));
 
         for (Usuario usuario : usuarios) {
-            usuario.setNombreUsuario(nombreUsuario);
+            usuario.setEmailUsuario(emailUsuario);
             usuario.setContrasenna(contrasenna);
             usuario.setRol(rol);
             userRepository.save(usuario);

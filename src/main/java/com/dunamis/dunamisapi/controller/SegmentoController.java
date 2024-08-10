@@ -5,7 +5,10 @@ import com.dunamis.dunamisapi.exception.SegmentoNotFoundException;
 import com.dunamis.dunamisapi.model.Segmento;
 import com.dunamis.dunamisapi.repository.SegmentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class SegmentoController {
     @PostMapping("/segmento")
     Segmento newSegmento(@RequestBody Segmento newSegmento){return segmentoRepository.save(newSegmento);}
 
-    @GetMapping("/segmento")
+    @GetMapping("/segmentos")
     List<Segmento> segmentoTodos(){return segmentoRepository.findAll();}
 
     @GetMapping("/segmento/{id}")
@@ -40,7 +43,14 @@ public class SegmentoController {
         if(!segmentoRepository.existsById(id)){
             throw new SegmentoNotFoundException(id);
         }
-        segmentoRepository.deleteById(id);
+
+        try {
+            segmentoRepository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "No se puede eliminar el segmento porque tiene automoviles asociados", e);
+        }
+
         return "El segmento con el id " + id + " ha sido eliminado satisfactoriamente";
     }
 }

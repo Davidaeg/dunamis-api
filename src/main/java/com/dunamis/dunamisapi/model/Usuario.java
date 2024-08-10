@@ -3,6 +3,7 @@ package com.dunamis.dunamisapi.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -13,9 +14,10 @@ public class Usuario {
     @Column(name = "idUsuario")
     private int idUsuario;
 
-    @NotNull(message = "El nombre de usuario no debe ser nulo")
-    @Column(name = "nombreUsuario")
-    private String nombreUsuario; // Cambiando el nombre del campo a nombreUsuario
+    @NotNull(message = "El correo electrónico no debe ser nulo")
+    @Email(message = "El correo electrónico debe ser válido")
+    @Column(name = "emailUsuario", unique = true)
+    private String emailUsuario;
 
     @NotNull(message = "La contraseña no debe ser nula")
     @Column(name = "Contrasenna")
@@ -41,12 +43,12 @@ public class Usuario {
         this.idUsuario = idUsuario;
     }
 
-    public @NotNull String getNombreUsuario() {
-        return nombreUsuario;
+    public @NotNull String getEmailUsuario() {
+        return emailUsuario;
     }
 
-    public void setNombreUsuario(@NotNull String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
+    public void setEmailUsuario(@NotNull String emailUsuario) {
+        this.emailUsuario = emailUsuario;
     }
 
     public @NotNull String getContrasenna() {
@@ -73,4 +75,5 @@ public class Usuario {
         this.persona = persona;
     }
 }
+
 

@@ -58,6 +58,7 @@ public class Automovil {
     private double costo;
 
     @NotNull
+    @Column(name = "automovil_activo")
     private boolean automovilActivo;
 
     @NotNull

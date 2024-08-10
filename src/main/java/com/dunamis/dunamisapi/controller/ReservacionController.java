@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.controller;
 
+import com.dunamis.dunamisapi.dto.AutomovilDTO;
+import com.dunamis.dunamisapi.dto.ReservacionDTO;
 import com.dunamis.dunamisapi.exception.ReservacionNotFoundException;
 import com.dunamis.dunamisapi.model.Automovil;
 import com.dunamis.dunamisapi.model.Cliente;
@@ -9,6 +11,7 @@ import com.dunamis.dunamisapi.repository.ClienteRepository;
 import com.dunamis.dunamisapi.repository.ReservacionRepository;
 import org.hibernate.procedure.spi.ParameterRegistrationImplementor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.ConstraintViolationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,40 +42,41 @@ public class ReservacionController {
     @PostMapping("/reservacion")
     public ResponseEntity<Reservacion> nuevaReservacion(@RequestBody Map<String, Object> reservacionDatos){
         try{
-            String idAutmovil = (String) reservacionDatos.get("automovil_placa");
-            String idCliente =  (String) reservacionDatos.get("cliente_id_cliente");
-            Automovil automovil = automovilRepository.findById(idAutmovil).orElseThrow(null);
-            Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(null);
-            String fechaFinString = (String) reservacionDatos.get("fecha_fin");
-            String fechaInicioString = (String) reservacionDatos.get("fecha_inicio");
+            String idAutmovil = (String) reservacionDatos.get("placa");
+            String idCliente = (String) reservacionDatos.get("idCliente");
+            Automovil automovil = automovilRepository.findById(idAutmovil).orElseThrow(() -> new IllegalArgumentException("El automovil con la placa numero " + idAutmovil + " no existe"));
+            Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new IllegalArgumentException("El cliente con el id " + idCliente + " no existe"));
+            String fechaFinString = (String) reservacionDatos.get("fechaFin");
+            String fechaInicioString = (String) reservacionDatos.get("fechaInicio");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date fechafinDate = sdf.parse(fechaFinString);
             Date fechaInicioDate = sdf.parse(fechaInicioString);
-            Reservacion reservacion = new Reservacion();
 
-            if(automovil != null && cliente != null){
-                reservacion.setIdReservacion((int) reservacionDatos.get("id_reservacion"));
-                reservacion.setFechaFin(fechafinDate);
-                reservacion.setFechaInicio(fechaInicioDate);
-                reservacion.setKmFinales((int) reservacionDatos.get("km_finales"));
-                reservacion.setKmIniciales((int) reservacionDatos.get("km_iniciales"));
-                reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacion_activo"));
-                reservacion.setAutomovil(automovil);
-                reservacion.setCliente(cliente);
-            }else{
-                throw new IllegalArgumentException("El automovil con la placa numero " + idAutmovil + " o el cliente con el id " + idCliente + " no existe");
-            }
+
+            automovil.setAutomovilActivo(false);
+            automovilRepository.save(automovil);
+
+            Reservacion reservacion = new Reservacion();
+            reservacion.setFechaFin(fechafinDate);
+            reservacion.setFechaInicio(fechaInicioDate);
+            reservacion.setKmFinales((int) reservacionDatos.get("kmFinales"));
+            reservacion.setKmIniciales((int) reservacionDatos.get("kmIniciales"));
+            reservacion.setReservacionActivo((boolean) reservacionDatos.get("reservacionActivo"));
+            reservacion.setAutomovil(automovil);
+            reservacion.setCliente(cliente);
+
             System.out.println("Saving: " + reservacion.toString());
             Reservacion savedReservacion = reservacionRepository.save(reservacion);
             return ResponseEntity.ok(savedReservacion);
         } catch (ParseException e) {
             throw new RuntimeException(e);
-        }catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validacion ", e);
         }
     }
 
-    @GetMapping("/reservacion")
+
+    @GetMapping("/reservaciones")
     List<Reservacion> reservacionesTodas(){return reservacionRepository.findAll();}
 
     @GetMapping("/reservacion/{id}")
@@ -79,24 +84,64 @@ public class ReservacionController {
         return reservacionRepository.findById(id).orElseThrow(()-> new ReservacionNotFoundException(id));
     }
 
-    @PutMapping("/reservacion/{id}")
-    Reservacion actualizarReservacion(@RequestBody Reservacion newReservacion, @PathVariable int id){
-        return  reservacionRepository.findById(id).map(reserva ->{
-            reserva.setFechaInicio(newReservacion.getFechaInicio());
-            reserva.setFechaFin(newReservacion.getFechaFin());
-            reserva.setKmFinales(newReservacion.getKmFinales());
-            reserva.setKmIniciales(newReservacion.getKmIniciales());
-            reserva.setReservacionActivo(newReservacion.isReservacionActivo());
-            return reservacionRepository.save(reserva);
-        }).orElseThrow(()-> new ReservacionNotFoundException(id));
+    @GetMapping("/reservacionesDTO")
+    public List<ReservacionDTO> obtenerTodosLasReservacionesDTO() {
+        List<Reservacion> reservaciones = reservacionRepository.findAll();
+        List<ReservacionDTO> reservasDTOs = new ArrayList<>();
+
+        for (Reservacion reservacion : reservaciones) {
+            ReservacionDTO dto = new ReservacionDTO();
+            dto.setIdReservacion(reservacion.getIdReservacion());
+            dto.setFechaFin(reservacion.getFechaFin());
+            dto.setFechaInicio(reservacion.getFechaInicio());
+            dto.setKmFinales(reservacion.getKmFinales());
+            dto.setKmIniciales(reservacion.getKmIniciales());
+            dto.setReservacionActivo(reservacion.isReservacionActivo());
+            dto.setAutoPlaca(reservacion.getAutomovil().getPlaca());
+            dto.setIdCliente(reservacion.getCliente().getIdCliente());
+            reservasDTOs.add(dto);
+        }
+
+        return reservasDTOs;
     }
+
+    @PutMapping("/reservacion/{id}")
+    public ResponseEntity<Reservacion> actualizarReservacion(@PathVariable int id, @RequestBody Map<String, Object> reservacionDatos) {
+        try {
+            // Buscar la reservación existente
+            Reservacion reservacionExistente = reservacionRepository.findById(id)
+                    .orElseThrow(() -> new ReservacionNotFoundException(id));
+
+            String fechaFinString = (String) reservacionDatos.get("fechaFin");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date fechaFinDate = sdf.parse(fechaFinString);
+
+            reservacionExistente.setFechaFin(fechaFinDate);
+            reservacionExistente.setKmFinales((int) reservacionDatos.get("kmFinales"));
+            reservacionExistente.setReservacionActivo((boolean) reservacionDatos.get("reservacionActivo"));
+
+            Reservacion reservacionActualizada = reservacionRepository.save(reservacionExistente);
+            return ResponseEntity.ok(reservacionActualizada);
+
+        } catch (ParseException e) {
+            throw new RuntimeException("Error al parsear la fecha", e);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validación", e);
+        }
+    }
+
 
     @DeleteMapping("/reservacion/{id}")
     String deleteReservacion(@PathVariable int id){
-        if(!reservacionRepository.existsById(id)){
-            throw new ReservacionNotFoundException(id);
-        }
+        Reservacion reservacion = reservacionRepository.findById(id)
+                .orElseThrow(() -> new ReservacionNotFoundException(id));
+
         reservacionRepository.deleteById(id);
+
+        Automovil automovil = reservacion.getAutomovil();
+        automovil.setAutomovilActivo(true);
+        automovilRepository.save(automovil);
+
         return "La reserva con el id " + id + " ha sido eliminada satisfactoriamente";
     }
 }

@@ -1,17 +1,20 @@
 package com.dunamis.dunamisapi.controller;
 
+import com.dunamis.dunamisapi.dto.AutomovilDTO;
 import com.dunamis.dunamisapi.exception.AutomovilNotFoundException;
 import com.dunamis.dunamisapi.model.Automovil;
 import com.dunamis.dunamisapi.model.Segmento;
 import com.dunamis.dunamisapi.repository.AutomovilRepository;
 import com.dunamis.dunamisapi.repository.SegmentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +32,14 @@ public class AutomovilController {
     public ResponseEntity<Automovil> newAutomovil(@RequestBody Map<String, Object> automovilDatos){
         try{
             Automovil auto = new Automovil();
-            int idSegemento = (int) automovilDatos.get("segmento_id_segmento");
+            int idSegemento = (int) automovilDatos.get("idSegmento");
             Segmento segmento = segmentoRepository.getById(idSegemento);
 
             if(segmento != null){
                 auto.setPlaca((String) automovilDatos.get("placa"));
                 auto.setTransmision((String) automovilDatos.get("transmision"));
                 auto.setAnno((int) automovilDatos.get("anno"));
-                auto.setAutomovilActivo((boolean) automovilDatos.get("automovil_activo"));
+                auto.setAutomovilActivo((boolean) automovilDatos.get("automovilActivo"));
                 auto.setCabina((String) automovilDatos.get("cabina"));
                 auto.setCarroceria((String) automovilDatos.get("carroceria"));
                 auto.setColor((String) automovilDatos.get("color"));
@@ -58,12 +61,95 @@ public class AutomovilController {
         }
     }
 
-    @GetMapping("/automovil")
+    @GetMapping("/automoviles")
     List<Automovil> automovilesTodos(){return automovilRepository.findAll();}
+
+    @GetMapping("/automovilesActivos")
+    List<Automovil> automovilesActivos() {
+        return automovilRepository.findByAutomovilActivoTrue();
+    }
+
+    @GetMapping("/automovilDispoDTO")
+    public List<AutomovilDTO> obtenerTodosLosAutomovilesDisponiblesDTO() {
+        List<Automovil> automoviles = automovilRepository.findByAutomovilActivoTrue();
+        List<AutomovilDTO> automovilDTOs = new ArrayList<>();
+
+        for (Automovil automovil : automoviles) {
+            AutomovilDTO dto = new AutomovilDTO();
+            dto.setPlaca(automovil.getPlaca());
+            dto.setMarca(automovil.getMarca());
+            dto.setModelo(automovil.getModelo());
+            dto.setAnno(automovil.getAnno());
+            dto.setColor(automovil.getColor());
+            dto.setEstilo(automovil.getEstilo());
+            dto.setCarroceria(automovil.getCarroceria());
+            dto.setCombustible(automovil.getCombustible());
+            dto.setCabina(automovil.getCabina());
+            dto.setTraccion(automovil.getTraccion());
+            dto.setTransmision(automovil.getTransmision());
+            dto.setCosto(automovil.getCosto());
+            dto.setAutomovilActivo(automovil.isAutomovilActivo());
+            dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+            automovilDTOs.add(dto);
+        }
+
+        return automovilDTOs;
+    }
 
     @GetMapping("/automovil/{id}")
     Automovil obtenerAutomovilPorId(@PathVariable String id){
         return  automovilRepository.findById(id).orElseThrow(()-> new AutomovilNotFoundException(id));
+    }
+
+    @GetMapping("/automovilDTO/{id}")
+    public AutomovilDTO obtenerAutomovilDTOPorId(@PathVariable String id) {
+        Automovil automovil = automovilRepository.findById(id)
+                .orElseThrow(() -> new AutomovilNotFoundException(id));
+
+        AutomovilDTO dto = new AutomovilDTO();
+        dto.setPlaca(automovil.getPlaca());
+        dto.setMarca(automovil.getMarca());
+        dto.setModelo(automovil.getModelo());
+        dto.setAnno(automovil.getAnno());
+        dto.setColor(automovil.getColor());
+        dto.setEstilo(automovil.getEstilo());
+        dto.setCarroceria(automovil.getCarroceria());
+        dto.setCombustible(automovil.getCombustible());
+        dto.setCabina(automovil.getCabina());
+        dto.setTraccion(automovil.getTraccion());
+        dto.setTransmision(automovil.getTransmision());
+        dto.setCosto(automovil.getCosto());
+        dto.setAutomovilActivo(automovil.isAutomovilActivo());
+        dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+
+        return dto;
+    }
+
+    @GetMapping("/automovilesDTO")
+    public List<AutomovilDTO> obtenerTodosLosAutomovilesDTO() {
+        List<Automovil> automoviles = automovilRepository.findAll();
+        List<AutomovilDTO> automovilDTOs = new ArrayList<>();
+
+        for (Automovil automovil : automoviles) {
+            AutomovilDTO dto = new AutomovilDTO();
+            dto.setPlaca(automovil.getPlaca());
+            dto.setMarca(automovil.getMarca());
+            dto.setModelo(automovil.getModelo());
+            dto.setAnno(automovil.getAnno());
+            dto.setColor(automovil.getColor());
+            dto.setEstilo(automovil.getEstilo());
+            dto.setCarroceria(automovil.getCarroceria());
+            dto.setCombustible(automovil.getCombustible());
+            dto.setCabina(automovil.getCabina());
+            dto.setTraccion(automovil.getTraccion());
+            dto.setTransmision(automovil.getTransmision());
+            dto.setCosto(automovil.getCosto());
+            dto.setAutomovilActivo(automovil.isAutomovilActivo());
+            dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+            automovilDTOs.add(dto);
+        }
+
+        return automovilDTOs;
     }
 
     @PutMapping("/automovil/{id}")
@@ -81,7 +167,16 @@ public class AutomovilController {
         if(!automovilRepository.existsById(id)){
             throw new AutomovilNotFoundException(id);
         }
-        automovilRepository.deleteById(id);
-        return "El automovil con el id " + id + " ha sido eliminado satisfactoriamente";
+
+        try {
+            automovilRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "No se puede eliminar el automóvil porque tiene reservas asociadas", e);
+        }
+
+        return "El automóvil con el id " + id + " ha sido eliminado satisfactoriamente";
     }
+
+
 }
