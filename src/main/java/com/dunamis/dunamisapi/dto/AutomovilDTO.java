@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.dto;
 
+import java.util.List;
+
 public class AutomovilDTO {
     private String placa;
     private String marca;
@@ -15,6 +17,16 @@ public class AutomovilDTO {
     private double costo;
     private boolean automovilActivo;
     private String segmentoNombre;
+    private List<TipoAutomovilDTO> tipoAutomoviles;
+
+    public List<TipoAutomovilDTO> getTipoAutomoviles() {
+        return tipoAutomoviles;
+    }
+
+    public void setTipoAutomoviles(List<TipoAutomovilDTO> tipoAutomoviles) {
+        this.tipoAutomoviles = tipoAutomoviles;
+    }
+
 
     public String getPlaca() {
         return placa;

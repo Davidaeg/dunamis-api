@@ -1,9 +1,11 @@
 package com.dunamis.dunamisapi.controller;
 
 import com.dunamis.dunamisapi.dto.AutomovilDTO;
+import com.dunamis.dunamisapi.dto.TipoAutomovilDTO;
 import com.dunamis.dunamisapi.exception.AutomovilNotFoundException;
 import com.dunamis.dunamisapi.model.Automovil;
 import com.dunamis.dunamisapi.model.Segmento;
+import com.dunamis.dunamisapi.model.TipoAutomovil;
 import com.dunamis.dunamisapi.repository.AutomovilRepository;
 import com.dunamis.dunamisapi.repository.SegmentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,11 +148,21 @@ public class AutomovilController {
             dto.setCosto(automovil.getCosto());
             dto.setAutomovilActivo(automovil.isAutomovilActivo());
             dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+
+            List<TipoAutomovilDTO> tipoAutomovilDTOs = new ArrayList<>();
+            for (TipoAutomovil tipoAutomovil : automovil.getTipoAutomoviles()) {
+                TipoAutomovilDTO tipoDto = new TipoAutomovilDTO();
+                tipoDto.setNombre(tipoAutomovil.getTipo().getNombre());
+                tipoAutomovilDTOs.add(tipoDto);
+            }
+            dto.setTipoAutomoviles(tipoAutomovilDTOs);
+
             automovilDTOs.add(dto);
         }
 
         return automovilDTOs;
     }
+
 
     @PutMapping("/automovil/{id}")
     Automovil actualizarAutomovil(@RequestBody Automovil automovil, @PathVariable String id){
