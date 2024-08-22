@@ -69,4 +69,6 @@ public class TipoAutomovilController {
         tipoAutomovilRepository.deleteById(id);
         return "El Tipo Automovil con el id " + id + " ha sido eliminado satisfactoriamente";
     }
+
+
 }

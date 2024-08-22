@@ -67,6 +67,42 @@ public class Automovil {
     @JsonIgnore
     private Segmento segmento;
 
+    //Consulta
+    @Column(name = "Tipo")
+    private String tipo; // Campo para el tipo de automóvil
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    @Column(name = "TarifaBase")
+    private double tarifaBase;
+
+    public double getTarifaBase(){
+        return tarifaBase;
+    }
+
+    public void setTarifaBase(double tarifaBase) {
+        this.tarifaBase = tarifaBase;
+    }
+
+    @Column(name = "TarifaPorKilometro")
+    private double tarifaPorKilometro;
+
+    public double getTarifaPorKilometro(){
+        return tarifaPorKilometro;
+    }
+
+    public void setTarifaPorKilometro(double tarifaPorKilometro) {
+        this.tarifaPorKilometro = tarifaPorKilometro;
+    }
+
+    //
+
     @OneToMany(mappedBy = "automovil")
     private Set<Reservacion> reservaciones;
 
@@ -201,4 +237,6 @@ public class Automovil {
     public void setAutomovilActivo(boolean automovilActivo) {
         this.automovilActivo = automovilActivo;
     }
+
+
 }

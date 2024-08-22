@@ -152,6 +152,43 @@ public class AutomovilController {
         return automovilDTOs;
     }
 
+    //Consultas
+    @GetMapping("/automovilPorPlaca/{placa}")
+    public ResponseEntity<Automovil> obtenerAutomovilPorPlaca(@PathVariable String placa){
+        Automovil automovil = automovilRepository.findByPlaca(placa);
+        if (automovil == null){
+          throw new AutomovilNotFoundException(placa);
+        }
+        return ResponseEntity.ok(automovil);
+    }
+
+    @GetMapping("/automovilesPorTipo/{tipo}")
+    public List<Automovil> obtenerAutomovilesPorTipo(@PathVariable String tipo){
+        return automovilRepository.findByTipo(tipo);
+    }
+
+    @GetMapping("/tarifaBasePorTipo/{tipo}")
+    public ResponseEntity<Double> obtenerTarifaBasePorTipo(@PathVariable String tipo){
+        Double tarifaBase = automovilRepository.findTarifaBaseByTipo(tipo);
+       if (tarifaBase == null){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa base no disponible");
+
+        }
+        return ResponseEntity.ok(tarifaBase);
+    }
+
+    @GetMapping("/tarifaPorKilometroPorTipo/{tipo}")
+    public ResponseEntity<Double> obtenerTarifaPorKilometroPorTipo(@PathVariable String tipo){
+        Double tarifaPorKilometro = automovilRepository.findTarifaPorKilometroByTipo(tipo);
+        if (tarifaPorKilometro == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa por kilómetro no disponible");
+        }
+        return ResponseEntity.ok(tarifaPorKilometro);
+    }
+
+
+    //
+
     @PutMapping("/automovil/{id}")
     Automovil actualizarAutomovil(@RequestBody Automovil automovil, @PathVariable String id){
         return automovilRepository.findById(id).map(auto ->{
