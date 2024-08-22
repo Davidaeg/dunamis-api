@@ -1,5 +1,7 @@
 package com.dunamis.dunamisapi.controller;
 
+import com.dunamis.dunamisapi.dto.DetalleFacturaDTO;
+import com.dunamis.dunamisapi.dto.ReservacionDTO;
 import com.dunamis.dunamisapi.exception.DetalleFacturaNotFoundException;
 import com.dunamis.dunamisapi.model.DetalleFactura;
 import com.dunamis.dunamisapi.model.Factura;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,16 +37,15 @@ public class DetalleFacturaController {
     public ResponseEntity<DetalleFactura> newDetalleFactura(@RequestBody Map<String, Object> detalleFacturaDatos){
         try{
             DetalleFactura detalleFactura = new DetalleFactura();
-            int idFactura = (int) detalleFacturaDatos.get("factura_id_factura");
+            int idFactura = (int) detalleFacturaDatos.get("factura");
             Factura factura = facturaRepository.getById(idFactura);
-            int idReserva = (int) detalleFacturaDatos.get("reservacion_id_reservacion");
+            int idReserva = (int) detalleFacturaDatos.get("reservacion");
             Reservacion reserva = reservacionRepository.getById(idReserva);
 
             if(factura != null && reserva != null){
-                detalleFactura.setIdDetalleFactura((int) detalleFacturaDatos.get("id_detalle_factura"));
-                detalleFactura.setCantidadDias((int) detalleFacturaDatos.get("cantidad_dias"));
-                detalleFactura.setCantidadKmRecorridos((int) detalleFacturaDatos.get("cantidad_km_recorridos"));
-                detalleFactura.setPrecioKmAutomovil((Double) detalleFacturaDatos.get("precio_km_automovil"));
+                detalleFactura.setCantidadDias((int) detalleFacturaDatos.get("cantidadDias"));
+                detalleFactura.setCantidadKmRecorridos((int) detalleFacturaDatos.get("cantidadKmRecorridos"));
+                detalleFactura.setPrecioKmAutomovil((Double) detalleFacturaDatos.get("precioKmAutomovil"));
                 detalleFactura.setSubtotal((Double) detalleFacturaDatos.get("subtotal"));
                 detalleFactura.setFactura(factura);
                 detalleFactura.setReservacion(reserva);
@@ -60,6 +62,29 @@ public class DetalleFacturaController {
 
     @GetMapping("/detalle-factura")
     List<DetalleFactura> detalleFacturasTodas(){return detalleFacturaRepository.findAll();}
+
+    @GetMapping("/detalle-facturaDTO")
+    public List<DetalleFacturaDTO> detalleFacturasTodasDTO() {
+        List<DetalleFactura> detallefactura = detalleFacturaRepository.findAll();
+        List<DetalleFacturaDTO> detallefacturaDTOs = new ArrayList<>();
+
+        for (DetalleFactura detalleFac : detallefactura) {
+            DetalleFacturaDTO dto = new DetalleFacturaDTO();
+            dto.setIdDetalleFactura(detalleFac.getIdDetalleFactura());
+            dto.setSubtotal(detalleFac.getSubtotal());
+            dto.setPrecioKmAutomovil(detalleFac.getPrecioKmAutomovil());
+            dto.setCantidadDias(detalleFac.getCantidadDias());
+
+            dto.setCantidadKmRecorridos((int) detalleFac.getCantidadKmRecorridos());
+            dto.setFacturaFecha(detalleFac.getFactura().getFecha().toString());
+            dto.setReservacionId(String.valueOf(detalleFac.getReservacion().getIdReservacion()));
+
+            detallefacturaDTOs.add(dto);
+        }
+
+        return detallefacturaDTOs;
+    }
+
 
     @GetMapping("/detalle-factura/{id}")
     DetalleFactura detalleFacturaPorId(@PathVariable int id){
@@ -78,11 +103,26 @@ public class DetalleFacturaController {
     }
 
     @DeleteMapping("/detalle-factura/{id}")
-    String deleteDetalleFactura(@PathVariable int id){
-        if(!detalleFacturaRepository.existsById(id)){
+    public String deleteDetalleFactura(@PathVariable int id) {
+        if (!detalleFacturaRepository.existsById(id)) {
             throw new DetalleFacturaNotFoundException(id);
         }
+
+        DetalleFactura detalleFactura = detalleFacturaRepository.findById(id)
+                .orElseThrow(() -> new DetalleFacturaNotFoundException(id));
+
+        Factura factura = detalleFactura.getFactura();
+
+        // Eliminar el detalle de factura
         detalleFacturaRepository.deleteById(id);
-        return "El Detalle de Factura con el id " + id + " ha sido eliminado satisfactoriamente";
+
+        // Verificar si aún quedan detalles asociados a la factura
+        if (detalleFacturaRepository.countByFactura(factura) == 0) {
+            // Eliminar la factura si ya no tiene detalles asociados
+            facturaRepository.delete(factura);
+        }
+
+        return "El Detalle de Factura con el id " + id + " y su factura asociada han sido eliminados satisfactoriamente";
     }
+
 }
