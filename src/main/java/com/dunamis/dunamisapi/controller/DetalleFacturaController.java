@@ -34,31 +34,37 @@ public class DetalleFacturaController {
     ReservacionRepository reservacionRepository;
 
     @PostMapping("/detalle-factura")
-    public ResponseEntity<DetalleFactura> newDetalleFactura(@RequestBody Map<String, Object> detalleFacturaDatos){
-        try{
+    public ResponseEntity<DetalleFactura> newDetalleFactura(@RequestBody Map<String, Object> detalleFacturaDatos) {
+        try {
             DetalleFactura detalleFactura = new DetalleFactura();
             int idFactura = (int) detalleFacturaDatos.get("factura");
             Factura factura = facturaRepository.getById(idFactura);
             int idReserva = (int) detalleFacturaDatos.get("reservacion");
             Reservacion reserva = reservacionRepository.getById(idReserva);
 
-            if(factura != null && reserva != null){
+            if (factura != null && reserva != null) {
                 detalleFactura.setCantidadDias((int) detalleFacturaDatos.get("cantidadDias"));
                 detalleFactura.setCantidadKmRecorridos((int) detalleFacturaDatos.get("cantidadKmRecorridos"));
                 detalleFactura.setPrecioKmAutomovil((Double) detalleFacturaDatos.get("precioKmAutomovil"));
                 detalleFactura.setSubtotal((Double) detalleFacturaDatos.get("subtotal"));
                 detalleFactura.setFactura(factura);
                 detalleFactura.setReservacion(reserva);
-            }else{
+
+                // Actualizar el estado de la reserva a inactivo
+                reserva.setReservacionActivo(false);
+                reservacionRepository.save(reserva);
+
+                // Guardar el detalle de la factura
+                DetalleFactura savedDetalleFactura = detalleFacturaRepository.save(detalleFactura);
+                return ResponseEntity.ok(savedDetalleFactura);
+            } else {
                 throw new IllegalArgumentException("La Factura con el id " + idFactura + " o la Reservacion con el id " + idReserva + " no existe.");
             }
-            System.out.printf("Saving: " + detalleFacturaDatos.toString());
-            DetalleFactura savedDetalleFactura = detalleFacturaRepository.save(detalleFactura);
-            return ResponseEntity.ok(savedDetalleFactura);
-        }catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error de validacion ", e);
         }
     }
+
 
     @GetMapping("/detalle-factura")
     List<DetalleFactura> detalleFacturasTodas(){return detalleFacturaRepository.findAll();}
