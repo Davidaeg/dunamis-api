@@ -92,6 +92,15 @@ public class AutomovilController {
             dto.setCosto(automovil.getCosto());
             dto.setAutomovilActivo(automovil.isAutomovilActivo());
             dto.setSegmentoNombre(automovil.getSegmento().getNombre());
+
+            List<TipoAutomovilDTO> tipoAutomovilDTOs = new ArrayList<>();
+            for (TipoAutomovil tipoAutomovil : automovil.getTipoAutomoviles()) {
+                TipoAutomovilDTO tipoDto = new TipoAutomovilDTO();
+                tipoDto.setNombre(tipoAutomovil.getTipo().getNombre());
+                tipoAutomovilDTOs.add(tipoDto);
+            }
+            dto.setTipoAutomoviles(tipoAutomovilDTOs);
+
             automovilDTOs.add(dto);
         }
 
