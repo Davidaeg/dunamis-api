@@ -3,6 +3,7 @@ package com.dunamis.dunamisapi.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,8 +24,8 @@ public class Factura {
         fecha = new Date();
     }
 
-    @OneToMany(mappedBy = "factura")
-    private Set<DetalleFactura> detalleFacturas;
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DetalleFactura> detalleFacturas = new HashSet<>();
 
     public int getIdFactura() {
         return idFactura;

@@ -20,7 +20,7 @@ public class FacturaController {
         return facturaRepository.save(newFactura);
     }
 
-    @GetMapping("/factura")
+    @GetMapping("/facturas")
     List<Factura> facturasTodas(){return facturaRepository.findAll();}
 
     @GetMapping("/factura/{id}")

@@ -18,7 +18,7 @@ public class TipoController {
     @PostMapping("/tipo")
     Tipo newTipo(@RequestBody Tipo newTipo){return tipoRepository.save(newTipo);}
 
-    @GetMapping("/tipo")
+    @GetMapping("/tipos")
     List<Tipo> tiposTodos(){return tipoRepository.findAll();}
 
     @GetMapping("/tipo/{id}")
