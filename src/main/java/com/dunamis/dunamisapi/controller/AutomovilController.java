@@ -163,8 +163,8 @@ public class AutomovilController {
     }
 
     @DeleteMapping("/automovil/{id}")
-    String deleteAutomovil(@PathVariable String id){
-        if(!automovilRepository.existsById(id)){
+    public String deleteAutomovil(@PathVariable String id) {
+        if (!automovilRepository.existsById(id)) {
             throw new AutomovilNotFoundException(id);
         }
 
@@ -172,7 +172,9 @@ public class AutomovilController {
             automovilRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "No se puede eliminar el automóvil porque tiene reservas asociadas", e);
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede eliminar el automóvil porque tiene reservas asociadas",
+                    e);
         }
 
         return "El automóvil con el id " + id + " ha sido eliminado satisfactoriamente";

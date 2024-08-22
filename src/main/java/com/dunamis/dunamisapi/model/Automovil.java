@@ -70,7 +70,7 @@ public class Automovil {
     @OneToMany(mappedBy = "automovil")
     private Set<Reservacion> reservaciones;
 
-    @OneToMany(mappedBy = "automovil")
+    @OneToMany(mappedBy = "automovil", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TipoAutomovil> tipoAutomoviles;
 
     public String getPlaca() {

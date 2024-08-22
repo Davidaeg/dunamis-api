@@ -2,12 +2,14 @@ package com.dunamis.dunamisapi.controller;
 
 import com.dunamis.dunamisapi.exception.TipoAutomovilNotFoundException;
 import com.dunamis.dunamisapi.model.Automovil;
+import com.dunamis.dunamisapi.model.Direccion;
 import com.dunamis.dunamisapi.model.Tipo;
 import com.dunamis.dunamisapi.model.TipoAutomovil;
 import com.dunamis.dunamisapi.repository.AutomovilRepository;
 import com.dunamis.dunamisapi.repository.TipoAutomovilRepository;
 import com.dunamis.dunamisapi.repository.TipoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +36,11 @@ public class TipoAutomovilController {
     public ResponseEntity<TipoAutomovil> newTipoAutomovil(@RequestBody Map<String, Object> tipoAutomovilDatos){
         try{
             TipoAutomovil tipoAutomovil = new TipoAutomovil();
-            String idAutomovil = (String) tipoAutomovilDatos.get("automovil_placa");
+            String idAutomovil = (String) tipoAutomovilDatos.get("automovil");
             Automovil automovil = automovilRepository.findById(idAutomovil).orElseThrow(null);
-            Tipo tipo = tipoRepository.findById((int) tipoAutomovilDatos.get("tipo_id_tipo")).orElseThrow(null);
+            Tipo tipo = tipoRepository.findById((int) tipoAutomovilDatos.get("tipo")).orElseThrow(null);
 
             if(automovil != null && tipoAutomovil != null){
-                tipoAutomovil.setId((int) tipoAutomovilDatos.get("id"));
                 tipoAutomovil.setAutomovil(automovil);
                 tipoAutomovil.setTipo(tipo);
             }else{
@@ -53,7 +54,7 @@ public class TipoAutomovilController {
         }
     }
 
-    @GetMapping("/tipoAutomovil")
+    @GetMapping("/tipoAutomoviles")
     List<TipoAutomovil> tipoAutomovilTodos(){return tipoAutomovilRepository.findAll();}
 
     @GetMapping("/tipoAutomovil/{id}")
@@ -66,7 +67,12 @@ public class TipoAutomovilController {
         if(!tipoAutomovilRepository.existsById(id)){
             throw new TipoAutomovilNotFoundException(id);
         }
-        tipoAutomovilRepository.deleteById(id);
+        try{
+            tipoAutomovilRepository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "No se puede eliminar la persona porque tiene reservas asociadas", e);
+        }
         return "El Tipo Automovil con el id " + id + " ha sido eliminado satisfactoriamente";
     }
 }
